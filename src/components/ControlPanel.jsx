@@ -121,8 +121,7 @@ const styles = {
         textAlign: 'left',
     },
     selectedLikert: {
-        background: 'rgba(59, 130, 246, 0.2)', // using an accent color
-        borderColor: 'var(--accent-color)',
+        background: 'var(--accent-glow)',
     },
     likertHeader: {
         display: 'flex',

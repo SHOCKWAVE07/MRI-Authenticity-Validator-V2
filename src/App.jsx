@@ -202,7 +202,7 @@ function App() {
     <div className="layout-container">
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <a href="/" style={{ display: 'flex', alignItems: 'center', gap: '1rem', textDecoration: 'none', cursor: 'pointer' }} title="Go to Home">
-            <img src={logo} alt="Lab Logo" style={{ height: '60px', borderRadius: '4px' }} />
+            <img src={logo} alt="Lab Logo" style={{ height: '80px', borderRadius: '4px' }} />
             <h1>MRI Authenticity Validator</h1>
         </a>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
