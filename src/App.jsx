@@ -50,7 +50,7 @@ function App() {
         const manifest = await parseFolder(file);
         const count = manifest.warmup.length + manifest.test.length;
         if (count === 0) {
-          alert("No valid cases found (looking for triplets of input/real/synth in folders named 'warmup' or 'test').");
+          alert("No valid cases found (looking for triplets of input/acquired/synth in folders named 'warmup' or 'test').");
         } else {
           startCustom(manifest);
         }

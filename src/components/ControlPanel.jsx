@@ -18,8 +18,8 @@ export function ControlPanel({ onSubmit, currentCaseIndex, totalCases, phase }) 
         { value: 1, label: 'Definitely Synthetic' },
         { value: 2, label: 'Probably Synthetic' },
         { value: 3, label: 'Cannot Determine' },
-        { value: 4, label: 'Probably Real' },
-        { value: 5, label: 'Definitely Real' },
+        { value: 4, label: 'Probably Acquired' },
+        { value: 5, label: 'Definitely Acquired' },
     ];
 
     return (

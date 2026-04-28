@@ -14,7 +14,7 @@ import JSZip from 'jszip';
  * - Filter images (png, jpg, jpeg, bmp, tiff).
  * - Split path. Look for 'warmup' or 'test' in path segments.
  * - Group by directory.
- * - In each directory, look for files answering to 'input', 'real', 'synth', 'target'.
+ * - In each directory, look for files answering to 'input', 'acquired'/'real', 'synth', 'target'.
  */
 export async function parseFolder(zipFile) {
     const manifest = {
@@ -56,7 +56,7 @@ export async function parseFolder(zipFile) {
 
         if (!phase) return; // Skip if not in known phase folder
 
-        let input, real, synth, target;
+        let input, acquired, synth, target;
 
         // ID is usually the directory name
         const id = dirPath.split('/').pop() || `case_${Math.random().toString(36).substr(2, 5)}`;
@@ -72,22 +72,22 @@ export async function parseFolder(zipFile) {
             item.modality = modality;
 
             if (name.includes('input') || name.includes('source')) input = item;
-            else if (name.includes('real')) real = item;
+            else if (name.includes('acquired') || name.includes('real')) acquired = item;
             else if (name.includes('synth') || name.includes('generated') || name.includes('fake')) synth = item;
             else if (name.includes('target')) target = item;
         });
 
-        // Warmup: Needs Input + (Real AND Synth) OR (Input + Target + TruthMetadata? No, prompt says retain all 3)
-        // Admin Portal puts input, real, synthetic in warmup.
+        // Warmup: Needs Input + (Acquired AND Synth) OR (Input + Target + TruthMetadata? No, prompt says retain all 3)
+        // Admin Portal puts input, acquired, synthetic in warmup.
         if (phase === 'warmup') {
-            if (input && real && synth) {
+            if (input && acquired && synth) {
                 manifest.warmup.push({
                     id,
                     input: getUrl(input.blob),
-                    real: getUrl(real.blob),
+                    acquired: getUrl(acquired.blob),
                     synthetic: getUrl(synth.blob),
                     inputModality: input.modality,
-                    realModality: real.modality,
+                    acquiredModality: acquired.modality,
                     syntheticModality: synth.modality
                 });
             }
@@ -102,10 +102,10 @@ export async function parseFolder(zipFile) {
                     target: getUrl(target.blob),
                     inputModality: input.modality,
                     targetModality: target.modality
-                    // No real/synth here, blind!
+                    // No acquired/synth here, blind!
                 });
             }
-            // Fallback for dev: if we have real/synth but no target, maybe we want to use them? 
+            // Fallback for dev: if we have acquired/synth but no target, maybe we want to use them? 
             // But strictly speaking, the expert package has target.
         }
     });

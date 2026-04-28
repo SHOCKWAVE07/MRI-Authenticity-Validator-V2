@@ -76,17 +76,17 @@ export function useSession() {
         let targetUrl, targetTypeStr;
 
         if (phase === 'warmup') {
-            // Warmup: We have real and synthetic. Randomize locally.
+            // Warmup: We have acquired and synthetic. Randomize locally.
             targetTypeStr = getNextTargetType();
             targetUrl = getTargetImage(rawCase, targetTypeStr);
         } else {
             // Test: We likely only have 'target' (blinded).
-            // Or fallback if we somehow have real/synth but it's test mode (shouldn't happen with blinded pack, but handle gracefully)
+            // Or fallback if we somehow have acquired/synth but it's test mode (shouldn't happen with blinded pack, but handle gracefully)
             if (rawCase.target) {
                 targetUrl = rawCase.target;
                 targetTypeStr = 'BLINDED'; // We don't know
             } else {
-                // Fallback if test mode but has real/synth (e.g. demo data)
+                // Fallback if test mode but has acquired/synth (e.g. demo data)
                 targetTypeStr = getNextTargetType();
                 targetUrl = getTargetImage(rawCase, targetTypeStr);
             }
@@ -94,7 +94,7 @@ export function useSession() {
 
         // Determine target modality based on targetTypeStr
         let targetModality = '';
-        if (targetTypeStr === 'Real') targetModality = rawCase.realModality;
+        if (targetTypeStr === 'Acquired') targetModality = rawCase.acquiredModality;
         else if (targetTypeStr === 'Synthetic') targetModality = rawCase.syntheticModality;
         else targetModality = rawCase.targetModality || ''; // Blinded or default case
 
@@ -102,7 +102,7 @@ export function useSession() {
             id: rawCase.id,
             input: rawCase.input,
             target: targetUrl,
-            targetType: targetTypeStr, // 'Real', 'Synthetic', or 'BLINDED'
+            targetType: targetTypeStr, // 'Acquired', 'Synthetic', or 'BLINDED'
             inputModality: rawCase.inputModality,
             targetModality: targetModality,
             rawCase: rawCase
@@ -120,7 +120,7 @@ export function useSession() {
 
         let isCorrect = null;
         if (currentPair.targetType !== 'BLINDED') {
-            if (currentPair.targetType === 'Real') {
+            if (currentPair.targetType === 'Acquired') {
                 isCorrect = rating >= 4 ? true : (rating <= 2 ? false : null);
             } else if (currentPair.targetType === 'Synthetic') {
                 isCorrect = rating <= 2 ? true : (rating >= 4 ? false : null);

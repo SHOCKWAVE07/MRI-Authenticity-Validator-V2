@@ -63,13 +63,13 @@ export const AdminPortal = ({ onExit }) => {
 
             const caseObj = cases.get(dirPath);
             if (filename.includes('input') || filename.includes('source')) caseObj.input = file;
-            if (filename.includes('real')) caseObj.real = file;
+            if (filename.includes('acquired') || filename.includes('real')) caseObj.acquired = file;
             if (filename.includes('synth') || filename.includes('fake')) caseObj.synthetic = file;
         }
 
         const validCases = [];
         cases.forEach((imgs, idPath) => {
-            if (imgs.input && imgs.real && imgs.synthetic) {
+            if (imgs.input && imgs.acquired && imgs.synthetic) {
                 validCases.push({
                     id: idPath.split('/').pop(),
                     imgs
@@ -78,7 +78,7 @@ export const AdminPortal = ({ onExit }) => {
         });
 
         if (validCases.length === 0) {
-            alert('No valid cases found (looking for folders with input, real, and synthetic images).');
+            alert('No valid cases found (looking for folders with input, acquired, and synthetic images).');
             return;
         }
 
@@ -127,11 +127,11 @@ export const AdminPortal = ({ onExit }) => {
             const folder = zip.folder(`warmup/${c.id}`);
 
             const inputBlob = await stripMetadata(c.imgs.input);
-            const realBlob = await stripMetadata(c.imgs.real);
+            const acquiredBlob = await stripMetadata(c.imgs.acquired);
             const synthBlob = await stripMetadata(c.imgs.synthetic);
 
             folder.file(c.imgs.input.name.replace(/\.[^/.]+$/, "") + ".png", inputBlob);
-            folder.file(c.imgs.real.name.replace(/\.[^/.]+$/, "") + ".png", realBlob);
+            folder.file(c.imgs.acquired.name.replace(/\.[^/.]+$/, "") + ".png", acquiredBlob);
             folder.file(c.imgs.synthetic.name.replace(/\.[^/.]+$/, "") + ".png", synthBlob);
 
             masterKey.push([c.id, 'WARMUP']);
@@ -143,17 +143,17 @@ export const AdminPortal = ({ onExit }) => {
             setProgress(Math.round((processedCount / totalToProcess) * 100));
             setStatusMsg(`Blinding Test Case: ${c.id}...`);
 
-            const isReal = Math.random() < 0.5;
-            masterKey.push([c.id, isReal ? 'Real' : 'Synthetic']);
+            const isAcquired = Math.random() < 0.5;
+            masterKey.push([c.id, isAcquired ? 'Acquired' : 'Synthetic']);
 
             const folder = zip.folder(`test/${c.id}`);
 
             const inputBlob = await stripMetadata(c.imgs.input);
-            const targetFile = isReal ? c.imgs.real : c.imgs.synthetic;
+            const targetFile = isAcquired ? c.imgs.acquired : c.imgs.synthetic;
             const targetBlob = await stripMetadata(targetFile);
 
             folder.file(c.imgs.input.name.replace(/\.[^/.]+$/, "") + ".png", inputBlob);
-            folder.file(c.imgs.real.name.replace(/real/i, "target").replace(/\.[^/.]+$/, "") + ".png", targetBlob);
+            folder.file(c.imgs.acquired.name.replace(/acquired|real/i, "target").replace(/\.[^/.]+$/, "") + ".png", targetBlob);
         }
 
         // CSV & Zip
