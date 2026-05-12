@@ -17,7 +17,7 @@ export function getNextTargetType() {
  * @returns {string} - The URL of the target image
  */
 export function getTargetImage(caseData, type) {
-    if (type === 'Acquired') return caseData.acquired;
+    if (type === 'Acquired') return caseData.acquired || caseData.real;
     if (type === 'Synthetic') return caseData.synthetic;
     throw new Error(`Invalid target type: ${type}`);
 }

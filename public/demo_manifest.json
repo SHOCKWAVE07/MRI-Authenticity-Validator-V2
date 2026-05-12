@@ -3,13 +3,13 @@
         {
             "id": "warmup_01",
             "input": "https://placehold.co/600x600/1e293b/FFF?text=Input+W1",
-            "real": "https://placehold.co/600x600/1e293b/4ade80?text=Real+W1",
+            "acquired": "https://placehold.co/600x600/1e293b/4ade80?text=Acquired+W1",
             "synthetic": "https://placehold.co/600x600/1e293b/f87171?text=Synth+W1"
         },
         {
             "id": "warmup_02",
             "input": "https://placehold.co/600x600/1e293b/FFF?text=Input+W2",
-            "real": "https://placehold.co/600x600/1e293b/4ade80?text=Real+W2",
+            "acquired": "https://placehold.co/600x600/1e293b/4ade80?text=Acquired+W2",
             "synthetic": "https://placehold.co/600x600/1e293b/f87171?text=Synth+W2"
         }
     ],
@@ -17,19 +17,19 @@
         {
             "id": "test_01",
             "input": "https://placehold.co/600x600/1e293b/FFF?text=Input+T1",
-            "real": "https://placehold.co/600x600/1e293b/4ade80?text=Real+T1",
+            "acquired": "https://placehold.co/600x600/1e293b/4ade80?text=Acquired+T1",
             "synthetic": "https://placehold.co/600x600/1e293b/f87171?text=Synth+T1"
         },
         {
             "id": "test_02",
             "input": "https://placehold.co/600x600/1e293b/FFF?text=Input+T2",
-            "real": "https://placehold.co/600x600/1e293b/4ade80?text=Real+T2",
+            "acquired": "https://placehold.co/600x600/1e293b/4ade80?text=Acquired+T2",
             "synthetic": "https://placehold.co/600x600/1e293b/f87171?text=Synth+T2"
         },
         {
             "id": "test_03",
             "input": "https://placehold.co/600x600/1e293b/FFF?text=Input+T3",
-            "real": "https://placehold.co/600x600/1e293b/4ade80?text=Real+T3",
+            "acquired": "https://placehold.co/600x600/1e293b/4ade80?text=Acquired+T3",
             "synthetic": "https://placehold.co/600x600/1e293b/f87171?text=Synth+T3"
         }
     ]

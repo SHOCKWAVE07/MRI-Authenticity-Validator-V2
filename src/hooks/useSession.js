@@ -76,41 +76,61 @@ export function useSession() {
         let targetUrl, targetTypeStr;
 
         if (phase === 'warmup') {
-            // Warmup: We have acquired and synthetic. Randomize locally.
-            targetTypeStr = getNextTargetType();
-            targetUrl = getTargetImage(rawCase, targetTypeStr);
+            if (rawCase.target && rawCase.targetType !== 'BLINDED') {
+                // Use pre-determined target from blinded package
+                targetUrl = rawCase.target;
+                targetTypeStr = rawCase.targetType;
+            } else {
+                // Local Randomization for unblinded warmup (e.g. demo)
+                // To ensure the 50/50 split even for demo data, we check the session history or pre-calc
+                // Simple approach: Use a deterministic sequence for the session
+                const numAcquired = Math.ceil(collection.length / 2);
+                
+                // For local randomization, we'll pre-generate the sequence for this phase if not already done
+                if (!sessionWarmupSequence.current || sessionWarmupSequence.current.length !== collection.length) {
+                    const seq = [];
+                    for (let i = 0; i < collection.length; i++) {
+                        seq.push(i < numAcquired ? 'Acquired' : 'Synthetic');
+                    }
+                    // Shuffle (using a simple random sort)
+                    seq.sort(() => 0.5 - Math.random());
+                    sessionWarmupSequence.current = seq;
+                }
+
+                targetTypeStr = sessionWarmupSequence.current[currentIndex];
+                targetUrl = getTargetImage(rawCase, targetTypeStr);
+            }
         } else {
-            // Test: We likely only have 'target' (blinded).
-            // Or fallback if we somehow have acquired/synth but it's test mode (shouldn't happen with blinded pack, but handle gracefully)
+            // Test Phase logic remains same
             if (rawCase.target) {
                 targetUrl = rawCase.target;
-                targetTypeStr = 'BLINDED'; // We don't know
+                targetTypeStr = 'BLINDED';
             } else {
-                // Fallback if test mode but has acquired/synth (e.g. demo data)
                 targetTypeStr = getNextTargetType();
                 targetUrl = getTargetImage(rawCase, targetTypeStr);
             }
         }
 
-        // Determine target modality based on targetTypeStr
+        // Determine target modality
         let targetModality = '';
         if (targetTypeStr === 'Acquired') targetModality = rawCase.acquiredModality;
         else if (targetTypeStr === 'Synthetic') targetModality = rawCase.syntheticModality;
-        else targetModality = rawCase.targetModality || ''; // Blinded or default case
+        else targetModality = rawCase.targetModality || '';
 
         setCurrentPair({
             id: rawCase.id,
             input: rawCase.input,
             target: targetUrl,
-            targetType: targetTypeStr, // 'Acquired', 'Synthetic', or 'BLINDED'
+            targetType: targetTypeStr,
             inputModality: rawCase.inputModality,
             targetModality: targetModality,
             rawCase: rawCase
         });
 
         startTimeRef.current = performance.now();
-
     }, [currentIndex, phase, manifest]);
+
+    const sessionWarmupSequence = useRef(null);
 
     const submitAnswer = useCallback((rating) => {
         if (!currentPair) return;
@@ -121,9 +141,9 @@ export function useSession() {
         let isCorrect = null;
         if (currentPair.targetType !== 'BLINDED') {
             if (currentPair.targetType === 'Acquired') {
-                isCorrect = rating >= 4 ? true : (rating <= 2 ? false : null);
+                isCorrect = rating >= 3;
             } else if (currentPair.targetType === 'Synthetic') {
-                isCorrect = rating <= 2 ? true : (rating >= 4 ? false : null);
+                isCorrect = rating <= 2;
             }
         }
 

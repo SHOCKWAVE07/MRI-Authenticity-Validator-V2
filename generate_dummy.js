@@ -27,7 +27,7 @@ for (let i = 1; i <= CASE_COUNT; i++) {
 
     // Write 3 files
     fs.writeFileSync(path.join(caseDir, 'input.png'), PNG_Buffer);
-    fs.writeFileSync(path.join(caseDir, 'real.png'), PNG_Buffer);
+    fs.writeFileSync(path.join(caseDir, 'acquired.png'), PNG_Buffer);
     fs.writeFileSync(path.join(caseDir, 'synthetic.png'), PNG_Buffer);
 }
 

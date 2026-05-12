@@ -14,7 +14,7 @@ import JSZip from 'jszip';
  * - Filter images (png, jpg, jpeg, bmp, tiff).
  * - Split path. Look for 'warmup' or 'test' in path segments.
  * - Group by directory.
- * - In each directory, look for files answering to 'input', 'acquired'/'real', 'synth', 'target'.
+ * - In each directory, look for files answering to 'input', 'acquired', 'synth', 'target'.
  */
 export async function parseFolder(zipFile) {
     const manifest = {
@@ -64,7 +64,7 @@ export async function parseFolder(zipFile) {
         group.forEach(item => {
             const name = item.filename.toLowerCase();
             // Extract modality: last part after underscore, before extension
-            // e.g. "case1_real_T1.png" -> "T1"
+            // e.g. "case1_acquired_T1.png" -> "T1"
             const nameWithoutExt = item.filename.substring(0, item.filename.lastIndexOf('.'));
             const parts = nameWithoutExt.split('_');
             const modality = parts.length > 1 ? parts[parts.length - 1] : '';
@@ -72,41 +72,48 @@ export async function parseFolder(zipFile) {
             item.modality = modality;
 
             if (name.includes('input') || name.includes('source')) input = item;
+            else if (name.includes('target')) target = item;
             else if (name.includes('acquired') || name.includes('real')) acquired = item;
             else if (name.includes('synth') || name.includes('generated') || name.includes('fake')) synth = item;
-            else if (name.includes('target')) target = item;
         });
 
-        // Warmup: Needs Input + (Acquired AND Synth) OR (Input + Target + TruthMetadata? No, prompt says retain all 3)
-        // Admin Portal puts input, acquired, synthetic in warmup.
+        // Warmup: Supports both 3-file (input, acquired, synth) and 2-file (input, target_*) structure
         if (phase === 'warmup') {
-            if (input && acquired && synth) {
+            if (input && (target || (acquired && synth))) {
+                const isBlinded = !!target;
+                let targetType = 'BLINDED';
+                if (isBlinded) {
+                    if (target.filename.toLowerCase().includes('acquired')) targetType = 'Acquired';
+                    else if (target.filename.toLowerCase().includes('synth')) targetType = 'Synthetic';
+                }
+
                 manifest.warmup.push({
                     id,
                     input: getUrl(input.blob),
-                    acquired: getUrl(acquired.blob),
-                    synthetic: getUrl(synth.blob),
+                    acquired: acquired ? getUrl(acquired.blob) : null,
+                    synthetic: synth ? getUrl(synth.blob) : null,
+                    target: target ? getUrl(target.blob) : null,
+                    targetType: targetType,
                     inputModality: input.modality,
-                    acquiredModality: acquired.modality,
-                    syntheticModality: synth.modality
+                    acquiredModality: acquired ? acquired.modality : '',
+                    syntheticModality: synth ? synth.modality : '',
+                    targetModality: target ? target.modality : ''
                 });
             }
         }
         // Test: Needs Input + Target
         else if (phase === 'test') {
-            // Supports Blinded (input + target) OR Unblinded Triplets (fallback/dev mode)
-            if (input && target) {
+            const actualTarget = target || acquired || synth;
+            if (input && actualTarget) {
                 manifest.test.push({
                     id,
                     input: getUrl(input.blob),
-                    target: getUrl(target.blob),
+                    target: getUrl(actualTarget.blob),
                     inputModality: input.modality,
-                    targetModality: target.modality
+                    targetModality: actualTarget.modality
                     // No acquired/synth here, blind!
                 });
             }
-            // Fallback for dev: if we have acquired/synth but no target, maybe we want to use them? 
-            // But strictly speaking, the expert package has target.
         }
     });
 

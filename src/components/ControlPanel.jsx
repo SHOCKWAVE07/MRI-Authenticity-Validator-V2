@@ -17,9 +17,8 @@ export function ControlPanel({ onSubmit, currentCaseIndex, totalCases, phase }) 
     const likertOptions = [
         { value: 1, label: 'Definitely Synthetic' },
         { value: 2, label: 'Probably Synthetic' },
-        { value: 3, label: 'Cannot Determine' },
-        { value: 4, label: 'Probably Acquired' },
-        { value: 5, label: 'Definitely Acquired' },
+        { value: 3, label: 'Probably Acquired' },
+        { value: 4, label: 'Definitely Acquired' },
     ];
 
     return (
@@ -34,7 +33,7 @@ export function ControlPanel({ onSubmit, currentCaseIndex, totalCases, phase }) 
             </div>
 
             <div style={styles.section}>
-                <label style={styles.label}>Evaluation (1-5)</label>
+                <label style={styles.label}>Evaluation (1-4)</label>
                 <div style={styles.likertGroup}>
                     {likertOptions.map(opt => (
                         <button

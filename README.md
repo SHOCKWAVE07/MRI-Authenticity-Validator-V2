@@ -1,10 +1,10 @@
 # Blinded MRI Validation Tool
 
-A specialized web application designed for expert validation of MRI image synthesis. This tool facilitates a double-blind study where experts evaluate the authenticity of synthetic MRI images against real ground truth data.
+A specialized web application designed for expert validation of MRI image synthesis. This tool facilitates a double-blind study where experts evaluate the authenticity of synthetic MRI images against acquired ground truth data.
 
 ## Features
 
-- **Blinded Evaluation**: Randomly presents Real vs. Synthetic image pairs to experts.
+- **Blinded Evaluation**: Randomly presents Acquired vs. Synthetic image pairs to experts.
 - **Modality Support**: Automatically detects and displays image modalities (T1, T2, PD) from filenames.
 - **Admin Portal**: 
     -   Generates "Blinded Packages" from raw datasets.
@@ -55,7 +55,7 @@ MyDataset/
   ├── warmup/
   │   ├── Case1/
   │   │   ├── input.png
-  │   │   ├── real.png
+  │   │   ├── acquired.png
   │   │   └── synthetic.png
   │   └── Case2/ ...
   └── test/
@@ -63,7 +63,7 @@ MyDataset/
       └── CaseB/ ...
 ```
 
-*Note: Filenames should contain "input"/"source", "real", and "synthetic"/"gen" to be recognized by the app.*
+*Note: Filenames should contain "input"/"source", "acquired", and "synthetic"/"gen" to be recognized by the app.*
 
 ## Deployment & Distribution
 
@@ -107,7 +107,7 @@ Embed the images directly into the application.
 ### For Administrators
 1.  Ideally, run the app locally or access via the hidden "Admin Access" button on the landing page.
 2.  Select **Generation Mode** to create a package for experts.
-3.  Upload your raw dataset (folders containing triplets: `input`, `real`, `synth`).
+3.  Upload your raw dataset (folders containing triplets: `input`, `acquired`, `synth`).
 4.  The tool will generate a zip file containing:
     -   `warmup/` folder
     -   `test/` folder
@@ -120,7 +120,7 @@ Embed the images directly into the application.
 ### Session Flow for Experts
 1.  **Warm-up**: 
     -   Observe the Left Input.
-    -   Judge if the Right Target is Real or Synthetic.
+    -   Judge if the Right Target is Acquired or Synthetic.
     -   Click Submit.
     -   **Feedback**: A pop-up tells you if you were right.
 2.  **Transition**: Automatically moves to Test phase after warm-up cases are done.
@@ -133,6 +133,6 @@ Embed the images directly into the application.
 
 ## File Naming Convention
 To ensure the app correctly detects image types and modalities, use the following conventions in your filenames:
--   **Type**: `input`, `real`, `synth` (or `fake`)
+-   **Type**: `input`, `acquired`, `synth` (or `fake`)
 -   **Modality**: Append as the last part after an underscore (e.g., `_T1.png`, `_PD.jpg`)
     -   Example: `input_T1.png` -> Displays as **T1**
